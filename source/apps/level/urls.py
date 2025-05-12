@@ -4,5 +4,5 @@ from .views import GlucoseLevelView
 
 urlpatterns = [
     path("", GlucoseLevelView.as_view()),
-    path("<int:user_id>/", GlucoseLevelView.as_view()),
+    path("user_id/<str:user_id>/", GlucoseLevelView.as_view()),
 ]

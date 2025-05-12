@@ -2,15 +2,33 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from source.apps.level.utils import create_glucose_records
+from source.apps.level.models import UnaUser
+from source.apps.level.pagination import CustomPageNumberPagination
+from source.apps.level.serializers import GlucoseRecordSerializer
+from source.apps.level.utils import create_glucose_records, glucose_records_filtered
 
 
 class GlucoseLevelView(APIView):
+    serializer_class = GlucoseRecordSerializer
+
     def get(self, request, user_id=None):
-        if user_id:
-            pass
-        else:
-            pass
+        una_user = UnaUser.objects.filter(una_id=user_id).first()
+        if not una_user:
+            return Response(data={"Error": "User not found"})
+
+        glucose_records = una_user.glucose_records.all()
+        params = request.query_params
+        glucose_records = glucose_records_filtered(
+            glucose_records=glucose_records, params=params
+        )
+
+        paginator = CustomPageNumberPagination()
+        paginated_queryset = paginator.paginate_queryset(glucose_records, request)
+
+        glucose_records_data = GlucoseRecordSerializer(
+            paginated_queryset, many=True
+        ).data
+        return Response(data=glucose_records_data, status=status.HTTP_200_OK)
 
     def post(self, request):
         una_file = request.FILES.get("file")

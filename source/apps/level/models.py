@@ -4,6 +4,10 @@ from django.db import models
 class UnaUser(models.Model):
     una_id = models.UUIDField(unique=True)
 
+    # @property
+    # def glucose_records(self):
+    #     return self.glucose_records.all()
+
 
 class GlucoseRecord(models.Model):
     serie_number = models.UUIDField()
