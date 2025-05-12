@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class User(models.Model):
+class UnaUser(models.Model):
     una_id = models.UUIDField(unique=True)
 
 
@@ -25,5 +25,5 @@ class GlucoseRecord(models.Model):
     correction_insulin_units = models.FloatField(null=True, blank=True)
     user_adjusted_insulin_units = models.FloatField(null=True, blank=True)
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="glucose_records"
+        UnaUser, on_delete=models.CASCADE, related_name="glucose_records"
     )
