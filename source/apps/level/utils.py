@@ -57,8 +57,8 @@ def create_glucose_records(una_file: InMemoryUploadedFile):
 
     user, created = UnaUser.objects.get_or_create(una_id=user_id)
 
-    file_path = default_storage.save(f"temp/{una_file.name}", una_file)
-    file_path = os.path.join(default_storage.location, file_path)
+    file_path_temp = default_storage.save(f"temp/{una_file.name}", una_file)
+    file_path = os.path.join(default_storage.location, file_path_temp)
 
     records_created = 0
 
@@ -110,8 +110,8 @@ def create_glucose_records(una_file: InMemoryUploadedFile):
     except Exception as e:
         raise Exception(str(e))
     finally:
-        if os.path.exists(file_path):
-            os.remove(file_path)
+        if os.path.exists(file_path_temp):
+            os.remove(file_path_temp)
 
     return records_created
 
