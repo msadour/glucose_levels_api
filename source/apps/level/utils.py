@@ -1,27 +1,14 @@
 import csv
 import os
 import uuid
-from datetime import datetime
-from typing import Optional, TextIO
+from typing import TextIO
 
 from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db.models import QuerySet
-from django.utils import timezone
 
 from source.apps.level.models import GlucoseRecord, UnaUser
-
-
-def convert_to_datetime(date_str: str) -> Optional[datetime]:
-    if not date_str:
-        return None
-
-    try:
-        date_obj = datetime.strptime(date_str, "%d-%m-%Y %H:%M")
-        date_obj = timezone.make_aware(date_obj)
-        return date_obj
-    except ValueError:
-        return None
+from source.tools import convert_to_datetime, to_float
 
 
 def get_csv_reader(csvfile: TextIO) -> csv.DictReader:
@@ -115,13 +102,6 @@ def create_glucose_records(una_file: InMemoryUploadedFile):
             os.remove(file_path_temp)
 
     return records_created
-
-
-def to_float(value):
-    try:
-        return float(value) if value else None
-    except ValueError:
-        return None
 
 
 def glucose_records_filtered(
