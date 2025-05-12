@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from source.apps.level.models import UnaUser
+from source.apps.level.pagination import CustomPageNumberPagination
 from source.apps.level.serializers import GlucoseRecordSerializer
 from source.apps.level.utils import create_glucose_records, glucose_records_filtered
 
@@ -17,11 +18,16 @@ class GlucoseLevelView(APIView):
 
         glucose_records = una_user.glucose_records.all()
         params = request.query_params
-
         glucose_records = glucose_records_filtered(
             glucose_records=glucose_records, params=params
         )
-        glucose_records_data = GlucoseRecordSerializer(glucose_records, many=True).data
+
+        paginator = CustomPageNumberPagination()
+        paginated_queryset = paginator.paginate_queryset(glucose_records, request)
+
+        glucose_records_data = GlucoseRecordSerializer(
+            paginated_queryset, many=True
+        ).data
         return Response(data=glucose_records_data, status=status.HTTP_200_OK)
 
     def post(self, request):
