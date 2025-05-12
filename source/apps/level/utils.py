@@ -6,6 +6,7 @@ from typing import Optional, TextIO
 
 from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from django.db.models import QuerySet
 from django.utils import timezone
 
 from source.apps.level.models import GlucoseRecord, UnaUser
@@ -121,3 +122,22 @@ def to_float(value):
         return float(value) if value else None
     except ValueError:
         return None
+
+
+def glucose_records_filtered(
+    glucose_records: QuerySet[GlucoseRecord], params: dict
+) -> QuerySet[GlucoseRecord]:
+    limit = params.get("limit")
+    if limit and limit.isdigit():
+        limit = int(limit)
+        glucose_records = glucose_records[:limit]
+
+    start = params.get("start")
+    if start:
+        glucose_records = glucose_records.filter(device_timestamp__gte=start)
+
+    stop = params.get("stop")
+    if stop:
+        glucose_records = glucose_records.filter(device_timestamp__lte=stop)
+
+    return glucose_records
