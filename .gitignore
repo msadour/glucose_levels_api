@@ -1,0 +1,4 @@
+__pycache__/
+venv
+.venv
+/glucose_levels_api/.env
